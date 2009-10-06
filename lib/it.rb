@@ -26,12 +26,9 @@ module It
     Initializers = ["init", "add"]
 
     def initialize cmd, param = nil, args = [], options
-      @command, @param, @args = cmd, param, args
-      @db = if File.exist? Path[:db]
-        YAML.load_file(Path[:db])
-      else
-        []
-      end
+      @command, @args = cmd, args
+      @param = param =~ /^\d+$/ ? param.to_i : param
+      @db = File.exist?(Path[:db]) ? Database.new(Path[:db]) : Database.new 
       @mut = Mutter.new(blue: '#', underline: "''", cyan: '@@').clear(:default)
     end
     
@@ -77,12 +74,12 @@ module It
     end
     
     def tag entry, tags
-      obj = @db.find {|e| e[:title].include? entry}
+      obj = @db.find entry
       obj[:tags] << tags
     end
     
     def done entry
-      obj = @db.find {|e| e[:title].include? entry}
+      obj = @db.find entry
       obj[:status] = :complete
       obj[:completed_at] = Time.now
     end
@@ -101,6 +98,37 @@ module It
     end
   end
   
+  class Database
+    include Enumerable
+
+    def initialize path = nil
+      @data = path ? YAML.load_file(path) : []
+    end
+    
+    def find key
+      if key.is_a? String
+        @data.find {|e| e[:title].include? entry}
+      elsif key.is_a? Fixnum
+        @data[key]
+      else
+        raise ArgumentError "key must be a String or Fixnum"
+      end
+    end
+    alias :[] find
+    
+    def each &blk
+      @data.each &blk
+    end
+
+    def << entry
+      @data << entry
+    end
+
+    def to_yaml *args, &blk
+      @data.to_yaml *args, &blk
+    end
+  end
+
   class Entity
     attr_accessor :data
 
