@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+require 'optparse'
+
+$:.unshift File.dirname(__FILE__) + "/../lib"
+
+require 'it'
+
+options = {}
+
+OptionParser.new do |o|
+  o.banner = "usage: it COMMAND [ARGS]"
+  o.separator ""
+
+  o.on_tail("-v", "--verbose", "enable verbose mode") do
+    options[:verbose] = true
+  end
+end
+
+It::Command.new(*ARGV[0..1], ARGV[2], options).run
+
