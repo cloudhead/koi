@@ -98,13 +98,11 @@ module It
     end
 
     def tag entry, tags
-      obj = @db.find entry
-      obj[:tags] << tags
+      @db.find(entry)[:tags] << tags
     end
 
     def done entry = 0
-      obj = @db.find entry
-      if obj
+      if obj = @db.find(entry)
         obj[:status] = :completed
         obj[:completed_at] = Time.now
       else
