@@ -68,15 +68,17 @@ module It
 
     def list index = -1
       out
-
-      @db.reject {|e| [:removed, :complete].include? e[:status]}.each do |e|
+      
+      @db.reject {|e| [:removed, :completed].include? e[:status]}.each do |e|
         out "#[#{index += 1}]# ''#{e[:title]}'' @@#{e[:tags].join(' ')}@@" unless e[:status] == :removed
+      end.tap do |list|
+        out "  !!nothing left to do!!" if list.size.zero?
       end
 
       out
       out "# recently completed"
 
-      @db.select  {|e| e[:status] == :complete}.
+      @db.select  {|e| e[:status] == :completed}.
           sort_by {|e| e[:completed_at]}[0..5].each do |e|
         out "- !!#{e[:title]}!!"
       end
@@ -102,8 +104,12 @@ module It
 
     def done entry = 0
       obj = @db.find entry
-      obj[:status] = :complete
-      obj[:completed_at] = Time.now
+      if obj
+        obj[:status] = :completed
+        obj[:completed_at] = Time.now
+      else
+        out "entry not found"
+      end
     end
 
     def save
@@ -129,9 +135,9 @@ module It
 
     def find key
       if key.is_a? String
-        @data.find {|e| e[:title].include? entry}
+        @data.find {|e| e[:title].include? key}
       elsif key.is_a? Fixnum
-        @data[key]
+        @data.select {|e| e[:status] == :fresh}[key]
       else
         raise ArgumentError "key must be a String or Fixnum"
       end
