@@ -68,15 +68,16 @@ module It
 
     def list index = -1
       out
+
       @db.reject {|e| [:removed, :complete].include? e[:status]}.each do |e|
         out "#[#{index += 1}]# ''#{e[:title]}'' @@#{e[:tags].join(' ')}@@" unless e[:status] == :removed
       end
-      
+
       out
       out "# recently completed"
 
       @db.select  {|e| e[:status] == :complete}.
-          sort_by {|e| e[:completed_at]}.each do |e|
+          sort_by {|e| e[:completed_at]}[0..5].each do |e|
         out "- !!#{e[:title]}!!"
       end
     end
