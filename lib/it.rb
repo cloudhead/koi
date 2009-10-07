@@ -92,9 +92,9 @@ module It
       end
     end
 
-    def add entry
+    def add entry, *tags
       It.init
-      @db << Entity.new(title: entry)
+      @db << Entity.new(title: entry, tags: tags)
     end
 
     def tag entry, tags
@@ -160,11 +160,12 @@ module It
   class Entity
     attr_accessor :data
 
-    def initialize data = []
-      @data = data
-      @data[:status] = :fresh
-      @data[:created_at] = Time.now
-      @data[:tags] = []
+    def initialize data = {}
+      @data = {
+        status: :fresh,
+        created_at: Time.now,
+        tags: []
+      }.merge data
     end
 
     def to_yaml *args, &blk
