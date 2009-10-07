@@ -117,8 +117,7 @@ module It
     end
 
     def remove entry
-      obj = @db.find {|e| e[:title].include? entry}
-      obj[:status] = :removed
+      @db.find(entry)[:status] = :removed
     end
 
     def err str
