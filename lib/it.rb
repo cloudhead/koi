@@ -41,7 +41,7 @@ module It
       @command, @args = cmd, args
       @param = param =~ /^\d+$/ ? param.to_i : param
       @db = It.init?? Database.new(File.join(It.root, Path[:db])) : Database.new
-      @mut = Mutter.new(blue: '#', underline: "''", cyan: '@@').clear(:default)
+      @mut = Mutter.new(blue: '#', underline: "''", cyan: '@@', green: '!!').clear(:default)
     end
 
     def run
@@ -67,12 +67,21 @@ module It
     end
 
     def list index = -1
-      @db.each do |e|
+      out
+      @db.reject {|e| [:removed, :complete].include? e[:status]}.each do |e|
         out "#[#{index += 1}]# ''#{e[:title]}'' @@#{e[:tags].join(' ')}@@" unless e[:status] == :removed
+      end
+      
+      out
+      out "# recently completed"
+
+      @db.select  {|e| e[:status] == :complete}.
+          sort_by {|e| e[:completed_at]}.each do |e|
+        out "- !!#{e[:title]}!!"
       end
     end
 
-    def out obj
+    def out obj = ""
       if obj.is_a? Hash
         puts "#{obj[:title]} : #{obj[:status]}"
       else
@@ -90,7 +99,7 @@ module It
       obj[:tags] << tags
     end
 
-    def done entry
+    def done entry = 0
       obj = @db.find entry
       obj[:status] = :complete
       obj[:completed_at] = Time.now
