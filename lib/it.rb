@@ -38,7 +38,7 @@ module It
     Initializers = ["init", "add"]
 
     def initialize cmd, param = nil, args = [], options
-      @command, @args = cmd, args
+      @command, @args = cmd, [args].flatten
       @param = param =~ /^\d+$/ ? param.to_i : param
       @db = It.init?? Database.new(File.join(It.root, Path[:db])) : Database.new
       @mut = Mutter.new(blue: '#', underline: "''", cyan: '@@', green: '!!').clear(:default)
@@ -47,7 +47,7 @@ module It
     def run
       if Commands.include? @command
         if It.init? or Initializers.include? @command
-          if send(@command, *@param, *@args)
+          if send(@command, *[*@param, *@args].flatten)
             save
           else
             abort "error running #@command"

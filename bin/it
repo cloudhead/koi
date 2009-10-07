@@ -5,6 +5,8 @@ $:.unshift File.dirname(__FILE__) + "/../lib"
 
 require 'it'
 
+args = ARGV.dup
+
 options = {}
 
 OptionParser.new do |o|
@@ -14,7 +16,7 @@ OptionParser.new do |o|
   o.on_tail("-v", "--verbose", "enable verbose mode") do
     options[:verbose] = true
   end
-end
+end.parse!(args)
 
-It::Command.new(*ARGV[0..1], ARGV[2], options).run
+It::Command.new(*args[0..1], args[2..-1], options).run
 
