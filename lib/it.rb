@@ -161,7 +161,7 @@ module It
     include Enumerable
 
     def initialize path = nil
-      @data = path ? YAML.load_file(path) : []
+      @data = path ? YAML.load_file(path).map {|e| Entity.new(e)} : []
     end
 
     def find key
