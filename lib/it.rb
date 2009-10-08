@@ -34,11 +34,18 @@ module It
   end
 
   class Command
-    Commands = ["init", "add", "list", "tag", "done", "remove", "float", "sink"]
-    Initializers = ["init", "add"]
+    Commands = [
+      :init, :add, :list, :tag,
+      :done, :did, :log, :status,
+      :remove, :float, :sink,
+      :ls, :rm
+    ]
+    Initializers = [:init, :add]
+    Special = {"!" => :done, "?" => :list}
 
     def initialize cmd, param = nil, args = [], options
-      @command, @args = cmd, [args].flatten
+      @command = Special[cmd] || cmd.to_sym
+      @args = [args].flatten
       @param = param =~ /^\d+$/ ? param.to_i : param
       @db = It.init?? Database.new(File.join(It.root, Path[:db])) : Database.new
       @mut = Mutter.new(blue: '#', underline: "''", cyan: '@@', green: '!!').clear(:default)
@@ -65,7 +72,10 @@ module It
         err "'it' has already been initialized here"
       end; true
     end
-
+    
+    #
+    # List current tasks
+    #
     def list index = -1
       out
       
@@ -82,6 +92,14 @@ module It
           sort_by {|e| e[:completed_at]}[0..5].each do |e|
         out "- !!#{e[:title]}!!"
       end
+    end
+    alias :ls list
+
+    #
+    # Show completed tasks
+    #
+    def log
+    
     end
 
     def out obj = ""
@@ -101,7 +119,7 @@ module It
       @db.find(entry)[:tags] << tags
     end
 
-    def done entry = 0
+    def did entry = 0
       if obj = @db.find(entry)
         obj[:status] = :completed
         obj[:completed_at] = Time.now
@@ -109,14 +127,19 @@ module It
         out "entry not found"
       end
     end
+    alias :done did
 
     def save
       File.open(File.join(It.root, Path[:db]), 'w') {|f| f.write @db.to_yaml}
     end
-
+    
+    #
+    # Mark task as :removed (doesn't show up anywhere)
+    #
     def remove entry
       @db.find(entry)[:status] = :removed
     end
+    alias :rm remove
 
     def err str
       $stderr.puts str
