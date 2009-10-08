@@ -17,7 +17,11 @@ module It
   def self.init? dir = root
     File.exist? File.join(dir, Path[:root])
   end
-
+  
+  def self.run *args
+    Command.new(*args).run
+  end
+  
   def self.version
     File.read(File.join(File.dirname(__FILE__), '..', 'VERSION')).strip
   end
@@ -47,6 +51,7 @@ module It
       @command = Special[cmd] || cmd.to_sym
       @args = [args].flatten
       @param = param =~ /^\d+$/ ? param.to_i : param
+      @options = options
       @db = It.init?? Database.new(File.join(It.root, Path[:db])) : Database.new
       @mut = Mutter.new(blue: '#', underline: "''", cyan: '@@', green: '!!').clear(:default)
     end
