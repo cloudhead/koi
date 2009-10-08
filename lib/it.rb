@@ -59,10 +59,14 @@ module It
     def run
       if Commands.include? @command
         if It.init? or Initializers.include? @command
-          if send(@command, *[*@param, *@args].flatten)
-            save
+          if !@param or @command == :add or @param = @db.find(@param)
+            if send(@command, *[*@param, *@args].flatten)
+              save
+            else
+              abort "error running #@command"
+            end
           else
-            abort "error running #@command"
+            abort "task wasn't found"
           end
         else
            abort "'it' is not initialized here, please run `it init`"
@@ -74,8 +78,10 @@ module It
 
     def init
       unless It.init
-        err "'it' has already been initialized here"
-      end; true
+        abort "'it' has already been initialized here"
+      else
+        true
+      end
     end
     
     #
