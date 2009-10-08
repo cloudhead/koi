@@ -5,8 +5,8 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "it"
-    gem.summary = %Q{minimal todo lists}
-    gem.description = %Q{minimal todo lists}
+    gem.summary = %Q{minimal task management for hackers}
+    gem.description = %Q{minimalist console-based task management for hackers}
     gem.email = "self@cloudhead.net"
     gem.homepage = "http://github.com/cloudhead/it"
     gem.authors = ["cloudhead"]
@@ -25,26 +25,7 @@ Spec::Rake::SpecTask.new(:spec) do |spec|
   spec.spec_files = FileList['spec/**/*_spec.rb']
 end
 
-Spec::Rake::SpecTask.new(:rcov) do |spec|
-  spec.libs << 'lib' << 'spec'
-  spec.pattern = 'spec/**/*_spec.rb'
-  spec.rcov = true
-end
-
 task :spec => :check_dependencies
 
 task :default => :spec
 
-require 'rake/rdoctask'
-Rake::RDocTask.new do |rdoc|
-  if File.exist?('VERSION')
-    version = File.read('VERSION')
-  else
-    version = ""
-  end
-
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "it #{version}"
-  rdoc.rdoc_files.include('README*')
-  rdoc.rdoc_files.include('lib/**/*.rb')
-end
