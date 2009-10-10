@@ -68,25 +68,33 @@ module It
       if Commands.include? @command
         if It.init? or Initializers.include? @command
           if !@param or @command == :add or @param = @db.find(@param)
-            if send(@command, *[*@param, *@args].flatten)
+            if send(@command, *[@param, *@args].compact.flatten)
               save
             else
-              abort "error running #@command"
+              err "error running #@command"
             end
           else
-            abort "task wasn't found"
+            err "task wasn't found"
           end
         else
-           abort "'it' is not initialized here, please run `it init`"
+           err "'it' is not initialized here, please run `it init`"
         end
       else
-        abort "#{@command} is not a valid command."
+        err "#{@command} is not a valid command."
       end
+    end
+    
+    def []= key, val
+      @options[key] = val
+    end
+    
+    def [] key
+      @options[key]
     end
 
     def init
       unless It.init
-        abort "'it' has already been initialized here"
+        err "'it' has already been initialized here"
       else
         true
       end
@@ -126,25 +134,26 @@ module It
         puts "#{obj[:title]} : #{obj[:status]}"
       else
         @mut.say obj.to_s
-      end
+      end unless @options[:silent]
+    end
+    
+    def err str
+      @options[:silent] ? abort : abort(str)
     end
 
     def add entry, *tags
       It.init
-      @db << Entity.new(title: entry, tags: tags)
+      e = Entity.new(title: entry, tags: tags)
+      @db << e
     end
 
     def tag entry, tags
-      @db.find(entry)[:tags] << tags
+      entry[:tags] << tags
     end
 
     def did entry = 0
-      if obj = @db.find(entry)
-        obj[:status] = :completed
-        obj[:completed_at] = Time.now
-      else
-        out "entry not found"
-      end
+      entry[:status] = :completed
+      entry[:completed_at] = Time.now
     end
     alias :done did
 
@@ -156,20 +165,20 @@ module It
     # Mark task as :removed (doesn't show up anywhere)
     #
     def remove entry
-      @db.find(entry)[:status] = :removed
+      entry[:status] = :removed
     end
     alias :rm remove
-
-    def err str
-      $stderr.puts str
-    end
   end
 
   class Database
     include Enumerable
 
     def initialize path = nil
-      @data = path ? YAML.load_file(path).map {|e| Entity.new(e)} : []
+      if @path = path
+        self.load path
+      else
+        @data = []
+      end
     end
 
     def find key
