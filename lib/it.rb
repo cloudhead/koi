@@ -187,17 +187,26 @@ module It
       elsif key.is_a? Fixnum
         @data.select {|e| e[:status] == :fresh}[key]
       else
-        raise ArgumentError "key must be a String or Fixnum"
+        raise ArgumentError, "key must be a String or Fixnum, but is #{key.class}"
       end
     end
     alias :[] find
+    
+    def load path = @path || Path[:db]
+      @data = if db = YAML.load_file(path)
+        db.map {|e| Entity.new(e)}
+      else
+        []
+      end
+      self
+    end
 
     def each &blk
       @data.each &blk
     end
 
     def << entry
-      @data << entry
+      @data << (entry.is_a?(Entity) ? entry : Entity.new(entry))
     end
 
     def to_yaml *args, &blk
@@ -205,27 +214,18 @@ module It
     end
   end
 
-  class Entity
+  class Entity < Hash
     attr_accessor :data
 
     def initialize data = {}
-      @data = {
-        status: :fresh,
-        created_at: Time.now,
-        tags: []
-      }.merge data
+      self.replace status: :fresh,
+                   created_at: Time.now,
+                   tags: []
+      merge!(data)
     end
-
-    def to_yaml *args, &blk
-      @data.to_yaml *args, &blk
-    end
-
-    def [] key
-      @data[key]
-    end
-
-    def []= key, val
-      @data[key] = val
+    
+    def flatten
+      self
     end
   end
 end
