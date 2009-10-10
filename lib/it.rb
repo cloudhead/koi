@@ -116,17 +116,26 @@ module It
       out "# recently completed"
 
       @db.select  {|e| e[:status] == :completed}.
-          sort_by {|e| e[:completed_at]}[0..5].each do |e|
+          sort_by {|e| e[:completed_at]}[0..3].reverse.each do |e|
         out "- !!#{e[:title]}!!"
       end
     end
     alias :ls list
 
     #
-    # Show completed tasks
+    # Show task history
     #
     def log
-    
+      @db.map do |entity|
+        Entity::Status.map do |status|
+          { title: entity[:title],
+            action: status,
+            time: entity[:"#{status}_at"]
+          } if entity[:"#{status}_at"]
+        end.compact
+      end.flatten.sort_by {|e| e[:time]}.reverse.each do |entry|
+        out "##{entry[:time]}# ^#{entry[:action]}^ ''#{entry[:title]}''"
+      end
     end
 
     def out obj = ""
@@ -214,10 +223,10 @@ module It
   end
 
   class Entity < Hash
-    Status = [:completed, :fresh, :removed]
+    Status = [:created, :completed, :removed]
 
     def initialize data = {}
-      self.replace status: :fresh,
+      self.replace status: :created,
                    created_at: Time.now,
                    tags: []
       merge!(data)
