@@ -7,16 +7,20 @@ require 'it'
 
 args = ARGV.dup
 
-options = {}
+options = {verbose: false, silent: false}
 
 OptionParser.new do |o|
   o.banner = "usage: it COMMAND [ARGS]"
   o.separator ""
-
+  
+  o.on_tail("-s", "--silent", "turn output off") do
+    options[:silent] = true
+  end
+  
   o.on_tail("-v", "--verbose", "enable verbose mode") do
     options[:verbose] = true
   end
 end.parse!(args)
 
-It::Command.new(*args[0..1], args[2..-1], options).run
+It::Command.new(args[0] || :status, args[1] || nil, args[2] || [], options).run
 

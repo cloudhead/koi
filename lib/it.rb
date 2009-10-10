@@ -47,11 +47,12 @@ module It
     Initializers = [:init, :add]
     Special = {"!" => :done, "?" => :list}
 
-    def initialize cmd, param = nil, args = [], options
+    def initialize *all
+      cmd, param, args, options = all
       @command = Special[cmd] || cmd.to_sym
-      @args = [args].flatten
+      @args = [args || []].flatten
       @param = param =~ /^\d+$/ ? param.to_i : param
-      @options = options
+      @options = options || {}
       @db = It.init?? Database.new(File.join(It.root, Path[:db])) : Database.new
       @mut = Mutter.new(blue: '#', underline: "''", cyan: '@@', green: '!!').clear(:default)
     end
