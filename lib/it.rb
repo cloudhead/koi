@@ -152,8 +152,7 @@ module It
     end
 
     def did entry = 0
-      entry[:status] = :completed
-      entry[:completed_at] = Time.now
+      entry.status = :completed
     end
     alias :done did
 
@@ -165,7 +164,7 @@ module It
     # Mark task as :removed (doesn't show up anywhere)
     #
     def remove entry
-      entry[:status] = :removed
+      entry.status = :removed
     end
     alias :rm remove
   end
@@ -215,7 +214,7 @@ module It
   end
 
   class Entity < Hash
-    attr_accessor :data
+    Status = [:completed, :fresh, :removed]
 
     def initialize data = {}
       self.replace status: :fresh,
@@ -224,8 +223,20 @@ module It
       merge!(data)
     end
     
-    def flatten
-      self
+    def status= st
+      self[:status] = st
+      self[:"#{st}_at"] = Time.now
+    end
+
+    #
+    # Handle things like `self.fresh?`
+    #
+    def method_missing meth, *args, &blk
+      if meth.end_with?('?') && Status.include?(s = meth.chop.to_sym)
+        self[:status] == s
+      else
+        super
+      end
     end
   end
 end
