@@ -61,7 +61,7 @@ module It
       @param = param =~ /^\d+$/ ? param.to_i : param
       @options = options || {}
       @db = It.init?? Database.new(File.join(It.root, Path[:db])) : Database.new
-      @mut = Mutter.new(blue: '#', underline: "''", cyan: '@@', green: '!!').clear(:default)
+      @mut = Mutter.new(blue: '#', underline: "''", cyan: '@@', green: '!!', yellow: '^').clear(:default)
     end
 
     def run
