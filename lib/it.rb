@@ -14,12 +14,19 @@ module It
     end
   end
 
+  def self.init! dir = Dir.pwd
+    FileUtils.rm_rf File.join(dir, Path[:root])
+    init dir
+  end
+
   def self.init? dir = root
-    File.exist? File.join(dir, Path[:root])
+    File.exist? File.join(dir, Path[:root]) if dir
   end
   
   def self.run *args
-    Command.new(*args).run
+    cmd = Command.new(*args)
+    cmd[:silent] = true
+    cmd.run
   end
   
   def self.version
