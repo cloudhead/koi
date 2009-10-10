@@ -37,7 +37,7 @@ describe It do
         if It.run(:add, TASK)
           e = It::Database.new(It::Path[:db]).find(TASK)
           e.should be_a(It::Entity)
-          e[:status].should == :fresh
+          e[:status].should == :created
           e[:tags].should == []
         else
           fail

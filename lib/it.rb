@@ -193,7 +193,7 @@ module It
       if key.is_a? String
         @data.find {|e| e[:title].include? key}
       elsif key.is_a? Fixnum
-        @data.select {|e| e[:status] == :fresh}[key]
+        @data.select {|e| e[:status] == :created}[key]
       else
         raise ArgumentError, "key must be a String or Fixnum, but is #{key.class}"
       end
@@ -238,7 +238,7 @@ module It
     end
 
     #
-    # Handle things like `self.fresh?`
+    # Handle things like `self.removed?`
     #
     def method_missing meth, *args, &blk
       if meth.end_with?('?') && Status.include?(s = meth.chop.to_sym)
