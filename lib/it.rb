@@ -100,25 +100,35 @@ module It
       end
     end
     
+    def status
+      out "in the water (#{@db.select {|e| e.new? }.size})"
+
+      self.list 5
+
+      out "recently fished (#{@db.select {|e| e.completed? }.size})"
+
+      @db.select  {|e| e[:status] == :completed}.
+          sort_by {|e| e[:completed_at]}[0..3].reverse.each do |e|
+        out "- !!#{e[:title]}!!"
+      end
+
+      out
+      true
+    end
+
     #
     # List current tasks
     #
-    def list index = -1
+    def list count = 10, index = -1
       out
       
-      @db.reject {|e| [:removed, :completed].include? e[:status]}.each do |e|
+      @db.select {|e| e.new? }[0..count].each do |e|
         out "#[#{index += 1}]# ''#{e[:title]}'' @@#{e[:tags].join(' ')}@@" unless e[:status] == :removed
       end.tap do |list|
         out "  !!nothing left to do!!" if list.size.zero?
       end
 
       out
-      out "# recently completed"
-
-      @db.select  {|e| e[:status] == :completed}.
-          sort_by {|e| e[:completed_at]}[0..3].reverse.each do |e|
-        out "- !!#{e[:title]}!!"
-      end
     end
     alias :ls list
 
