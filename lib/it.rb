@@ -107,8 +107,8 @@ module It
 
       out "recently fished (#{@db.select {|e| e.completed? }.size})"
 
-      @db.select  {|e| e[:status] == :completed}.
-          sort_by {|e| e[:completed_at]}[0..3].reverse.each do |e|
+      @db.select  {|e| e[:status] == :completed }.
+          sort_by {|e| e[:completed_at] }[0..3].reverse.each do |e|
         out "- !!#{e[:title]}!!"
       end
 
@@ -162,8 +162,7 @@ module It
 
     def add entry, *tags
       It.init
-      e = Entity.new(title: entry, tags: tags)
-      @db << e
+      @db << Entity.new(title: entry, tags: tags)
     end
 
     def tag entry, tags
@@ -178,7 +177,7 @@ module It
     alias :fish did
 
     def save
-      File.open(File.join(It.root, Path[:db]), 'w') {|f| f.write @db.to_yaml}
+      File.open(File.join(It.root, Path[:db]), 'w') {|f| f.write @db.to_yaml }
     end
     
     #
@@ -204,7 +203,7 @@ module It
 
     def find key
       if key.is_a? String
-        @data.find {|e| e[:title].include? key}
+        @data.find {|e| e[:title].include? key }
       elsif key.is_a? Fixnum
         @data.select {|e| e[:status] == :created}[key]
       else
@@ -215,7 +214,7 @@ module It
     
     def load path = @path || Path[:db]
       @data = if db = YAML.load_file(path)
-        db.map {|e| Entity.new(e)}
+        db.map {|e| Entity.new(e) }
       else
         []
       end
