@@ -172,8 +172,10 @@ module It
 
     def did entry = 0
       entry.status = :completed
+      entry[:completed_by] = ENV['USER']
     end
     alias :done did
+    alias :fish did
 
     def save
       File.open(File.join(It.root, Path[:db]), 'w') {|f| f.write @db.to_yaml}
@@ -186,6 +188,7 @@ module It
       entry.status = :removed
     end
     alias :rm remove
+    alias :kill remove
   end
 
   class Database
@@ -238,10 +241,15 @@ module It
     def initialize data = {}
       self.replace status: :created,
                    created_at: Time.now,
+                   owner: ENV['USER'],
                    tags: []
       merge!(data)
     end
     
+    def new?
+      self[:status] == :created
+    end
+
     def status= st
       self[:status] = st
       self[:"#{st}_at"] = Time.now
@@ -251,7 +259,7 @@ module It
     # Handle things like `self.removed?`
     #
     def method_missing meth, *args, &blk
-      if meth.end_with?('?') && Status.include?(s = meth.chop.to_sym)
+      if meth.to_s.end_with?('?') && Status.include?(s = meth.to_s.chop.to_sym)
         self[:status] == s
       else
         super
