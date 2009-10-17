@@ -52,7 +52,7 @@ module It
       :ls, :rm
     ]
     Initializers = [:init, :add]
-    Special = {"!" => :done, "?" => :list}
+    Special = {"!" => :done, "?" => :status}
 
     def initialize *all
       cmd, param, args, options = all
