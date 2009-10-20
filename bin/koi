@@ -3,7 +3,7 @@ require 'optparse'
 
 $:.unshift File.dirname(__FILE__) + "/../lib"
 
-require 'it'
+require 'koi'
 
 args = ARGV.dup
 
@@ -22,5 +22,5 @@ OptionParser.new do |o|
   end
 end.parse!(args)
 
-It::Command.new(args[0] || :status, args[1] || nil, args[2] || [], options).run
+Koi::Command.new(args[0] || :status, args[1] || nil, args[2] || [], options).run
 

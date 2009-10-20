@@ -4,12 +4,12 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{it}
-  s.version = "0.2.0"
+  s.name = %q{koi}
+  s.version = "0.2.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["cloudhead"]
-  s.date = %q{2009-10-10}
+  s.date = %q{2009-10-20}
   s.default_executable = %q{it}
   s.description = %q{minimalist console-based task management for hackers}
   s.email = %q{self@cloudhead.net}
@@ -26,12 +26,10 @@ Gem::Specification.new do |s|
      "Rakefile",
      "VERSION",
      "bin/it",
-     "it.gemspec",
-     "lib/it.rb",
      "spec/it_spec.rb",
      "spec/spec_helper.rb"
   ]
-  s.homepage = %q{http://github.com/cloudhead/it}
+  s.homepage = %q{http://github.com/cloudhead/koi}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.5}
@@ -47,13 +45,13 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_development_dependency(%q<rspec>, [">= 0"])
-      s.add_runtime_dependency(%q<mutter>, [">= 0.3.7"])
+      s.add_runtime_dependency(%q<mutter>, [">= 0.4"])
     else
       s.add_dependency(%q<rspec>, [">= 0"])
-      s.add_dependency(%q<mutter>, [">= 0.3.7"])
+      s.add_dependency(%q<mutter>, [">= 0.4"])
     end
   else
     s.add_dependency(%q<rspec>, [">= 0"])
-    s.add_dependency(%q<mutter>, [">= 0.3.7"])
+    s.add_dependency(%q<mutter>, [">= 0.4"])
   end
 end

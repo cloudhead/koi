@@ -3,9 +3,9 @@ require 'yaml'
 require 'mutter'
 require 'fileutils'
 
-module It
+module Koi
 
-  Path = {root: ".it", db: ".it/database.yml"}
+  Path = {root: ".koi", db: ".koi/database.yml"}
 
   def self.init dir = Dir.pwd
     unless init?
@@ -34,9 +34,9 @@ module It
   end
 
   def self.root
-    path = Dir.pwd.split('/').reject {|d| d.empty?}
+    path = Dir.pwd.split('/').reject {|d| d.empty? }
     (path.size + 1).times do
-      if It.init? (sub = File.join('/', *path))
+      if Koi.init? (sub = File.join('/', *path))
         return sub
       end
       path.pop
@@ -60,13 +60,13 @@ module It
       @args = [args || []].flatten
       @param = param =~ /^\d+$/ ? param.to_i : param
       @options = options || {}
-      @db = It.init?? Database.new(File.join(It.root, Path[:db])) : Database.new
+      @db = Koi.init?? Database.new(File.join(Koi.root, Path[:db])) : Database.new
       @mut = Mutter.new(blue: '#', underline: "''", cyan: '@@', green: '!!', yellow: '^').clear(:default)
     end
 
     def run
       if Commands.include? @command
-        if It.init? or Initializers.include? @command
+        if Koi.init? or Initializers.include? @command
           if !@param or @command == :add or @param = @db.find(@param)
             if send(@command, *[@param, *@args].compact.flatten)
               save
@@ -93,7 +93,7 @@ module It
     end
 
     def init
-      unless It.init
+      unless Koi.init
         err "'it' has already been initialized here"
       else
         true
@@ -131,6 +131,12 @@ module It
       out
     end
     alias :ls list
+    
+    def float
+    end
+
+    def sink
+    end
 
     #
     # Show task history
@@ -161,7 +167,7 @@ module It
     end
 
     def add entry, *args
-      It.init
+      Koi.init
       target = args.find {|a| a.start_with? '@' }[1..-1] rescue nil
       tags = args.select {|a| a.start_with? '#' }
       @db << Entity.new(title: entry, tags: tags, target: target)
@@ -179,7 +185,7 @@ module It
     alias :fish did
 
     def save
-      File.open(File.join(It.root, Path[:db]), 'w') {|f| f.write @db.to_yaml }
+      File.open(File.join(Koi.root, Path[:db]), 'w') {|f| f.write @db.to_yaml }
     end
     
     #
@@ -240,10 +246,13 @@ module It
     Status = [:created, :completed, :removed]
 
     def initialize data = {}
-      self.replace status: :created,
+      self.replace status:     :created,
                    created_at: Time.now,
-                   owner: ENV['USER'],
-                   tags: []
+                   owner:      ENV['USER'],
+                   velocity:   0,
+                   freshness:  0,
+                   depth:      0,
+                   tags:       []
       merge!(data)
     end
     
