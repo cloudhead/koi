@@ -10,10 +10,10 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["cloudhead"]
   s.date = %q{2009-10-20}
-  s.default_executable = %q{it}
+  s.default_executable = %q{koi}
   s.description = %q{minimalist console-based task management for hackers}
   s.email = %q{self@cloudhead.net}
-  s.executables = ["it"]
+  s.executables = ["koi"]
   s.extra_rdoc_files = [
     "LICENSE",
      "README.md"
@@ -25,8 +25,10 @@ Gem::Specification.new do |s|
      "README.md",
      "Rakefile",
      "VERSION",
-     "bin/it",
-     "spec/it_spec.rb",
+     "bin/koi",
+     "koi.gemspec",
+     "lib/koi.rb",
+     "spec/koi_spec.rb",
      "spec/spec_helper.rb"
   ]
   s.homepage = %q{http://github.com/cloudhead/koi}
@@ -35,7 +37,7 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.5}
   s.summary = %q{minimal task management for hackers}
   s.test_files = [
-    "spec/it_spec.rb",
+    "spec/koi_spec.rb",
      "spec/spec_helper.rb"
   ]
 
