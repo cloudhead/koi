@@ -30,21 +30,21 @@ Let's see what we've got now with `list`:
 
 Tasks can be refered to by index `1`, `2` or by name. You don't have to type in the full name though:
 
-    $ koi tag spaghetti @R
+    $ koi tag spaghetti #R
     $ koi done 1
 
-I just went ahead and tagged my first task with `@R`, and completed my 2nd one. Here's the new list:
+I just went ahead and tagged my first task with `#R`, and completed my 2nd one. Here's the new list:
 
     $ koi list
 
-    [0] refactor spaghetti code @R
+    [0] refactor spaghetti code #R
     
     # recently completed
     - find a better name
 
 You can also specify tags when adding new tasks:
 
-    $ koi add "make pasta" @food @yum @kitchen
+    $ koi add "make pasta" #food #yum #kitchen
 
 And remove tasks:
 
