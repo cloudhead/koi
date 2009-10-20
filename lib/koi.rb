@@ -129,6 +129,7 @@ module Koi
       end
 
       out
+      true
     end
     alias :ls list
     
