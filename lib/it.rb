@@ -155,14 +155,16 @@ module It
         @mut.say obj.to_s
       end unless @options[:silent]
     end
-    
+
     def err str
       @options[:silent] ? abort : abort(str)
     end
 
-    def add entry, *tags
+    def add entry, *args
       It.init
-      @db << Entity.new(title: entry, tags: tags)
+      target = args.find {|a| a.start_with? '@' }[1..-1] rescue nil
+      tags = args.select {|a| a.start_with? '#' }
+      @db << Entity.new(title: entry, tags: tags, target: target)
     end
 
     def tag entry, tags
