@@ -6,12 +6,21 @@ describe Koi do
   context "in a new project" do
     before(:each) do
       FileUtils.rm_rf(Koi::Path[:root])
+      FileUtils.rm_rf(File.join(ENV['HOME'], Koi::Path[:root]))
     end
 
-    it "should initialize the directory" do
+    it "should initialize the .koi directory" do
       Koi.run(:init)
-      File.exist?(Koi::Path[:root]).should be_true
-      File.exist?(Koi::Path[:db]).should be_true
+      File.exist?(Koi::Path[:root]).should == true
+      File.exist?(Koi::Path[:db]).should == true
+    end
+    
+    it "should create a .koi in ~" do
+      Koi.run(:init)
+      File.exist?(File.join(ENV['HOME'], Koi::Path[:root])).
+        should == true
+      File.read(File.join(ENV['HOME'], Koi::Path[:paths])).
+        split(/\n/).should include(File.expand_path(Dir.pwd))
     end
 
     it "should warn that the project isn't initialized" do
