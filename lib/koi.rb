@@ -82,7 +82,7 @@ module Koi
             err "task wasn't found"
           end
         else
-           err "'it' is not initialized here, please run `it init`"
+           err "'koi' is not initialized here, please run `koi init`"
         end
       else
         err "#{@command} is not a valid command."
@@ -99,7 +99,7 @@ module Koi
 
     def init
       unless Koi.init
-        err "'it' has already been initialized here"
+        err "'koi' has already been initialized here"
       else
         true
       end
