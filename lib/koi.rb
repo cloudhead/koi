@@ -289,7 +289,7 @@ module Koi
                    owner:      ENV['USER'],
                    tags:       [],
                    sticky:     false
-      merge!(data)
+      update data.reduce({}) {|h, (k,v)| h.merge(k.to_sym => v) }
     end
 
     def new?
@@ -303,6 +303,12 @@ module Koi
     def status= st
       self[:status] = st
       self[:"#{st}_at"] = Time.now
+    end
+
+    def to_yaml *args
+      reduce({}) do |h, (k, v)|
+        h.merge(k.to_s => v)
+      end.to_yaml *args
     end
 
     #
