@@ -110,11 +110,9 @@ module Koi
 
       self.list 5
 
-      out "recently fished (#{@db.select {|e| e.completed? }.size})"
-
       @db.select  {|e| e[:status] == :completed }.
           sort_by {|e| e[:completed_at] }[0..3].reverse.each do |e|
-        out "- !!#{e[:title]}!!"
+        out " #[x]#   !!#{e[:title]}!!"
       end
 
       out
@@ -128,7 +126,7 @@ module Koi
       out
 
       @db.list[0..count].each do |e|
-        out "#[#{index += 1}]##{e.sticky?? "++ + ++" : "   "}''#{e[:title]}'' @@#{e[:tags].join(' ')}@@" unless e[:status] == :removed
+        out " #[#{index += 1}]##{e.sticky?? "++ + ++" : "   "}''#{e[:title]}'' @@#{e[:tags].join(' ')}@@" unless e[:status] == :removed
       end.tap do |list|
         out "  !!nothing left to do!!" if list.size.zero?
       end
@@ -165,7 +163,7 @@ module Koi
         Entity::Status.map do |status|
           { title:  entity[:title],
             action: status,
-            time:   entity[:"#{status}_at"]
+            time:   entity[:"#{status}_at"].strftime("%Y/%m/%d %H:%m")
           } if entity[:"#{status}_at"]
         end.compact
       end.flatten.sort_by {|e| e[:time]}.reverse.each do |entry|
