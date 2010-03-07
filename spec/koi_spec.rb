@@ -14,7 +14,7 @@ describe Koi do
       File.exist?(Koi::Path[:root]).should == true
       File.exist?(Koi::Path[:db]).should == true
     end
-    
+
     it "should create a .koi in ~" do
       Koi.run(:init)
       File.exist?(File.join(ENV['HOME'], Koi::Path[:root])).
@@ -32,12 +32,12 @@ describe Koi do
     before(:all) do
       Koi.init!
     end
- 
+
     context "with no tasks" do
       it "shouldn't try to init" do
         -> {Koi.run(:init)}.should raise_error(SystemExit)
       end
-      
+
       it "should warn about invalid commands" do
         -> {Koi.run(:choo)}.should raise_error(SystemExit)
       end

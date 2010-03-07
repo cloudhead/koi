@@ -163,9 +163,9 @@ module Koi
     def log
       @db.map do |entity|
         Entity::Status.map do |status|
-          { title: entity[:title],
+          { title:  entity[:title],
             action: status,
-            time: entity[:"#{status}_at"]
+            time:   entity[:"#{status}_at"]
           } if entity[:"#{status}_at"]
         end.compact
       end.flatten.sort_by {|e| e[:time]}.reverse.each do |entry|
