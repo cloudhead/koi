@@ -1,7 +1,7 @@
 
 require 'yaml'
-require 'mutter'
 require 'fileutils'
+require 'colored'
 
 module Koi
 
@@ -53,10 +53,10 @@ module Koi
       :init, :add, :list, :tag,
       :done, :did, :log, :status,
       :remove, :float, :sink,
-      :ls, :rm, :rise
+      :ls, :rm, :rise, :x
     ]
     Initializers = [:init, :add]
-    Special = {"!" => :done, "?" => :status}
+    Special = {"!" => :done, "?" => :status, "+" => :float}
 
     def initialize *all
       cmd, param, args, options = all
@@ -65,7 +65,6 @@ module Koi
       @param = param =~ /^\d+$/ ? param.to_i : param
       @options = options || {}
       @db = Koi.init?? Database.new(File.join(Koi.root, Path[:db])) : Database.new
-      @mut = Mutter.new(blue: '#', underline: "''", red: '++', cyan: '@@', green: '!!', yellow: '^').clear(:default)
     end
 
     def run
@@ -106,16 +105,15 @@ module Koi
     end
 
     def status
-      out "in the water (#{@db.select {|e| e.new? }.size})"
+      out "#{@db.select {|e| e.new? }.size} koi in the water"
 
       self.list 5
 
       @db.select  {|e| e[:status] == :completed }.
           sort_by {|e| e[:completed_at] }[0..3].reverse.each do |e|
-        out " #[x]#   !!#{e[:title]}!!"
-      end
+        out " [x] ".blue + "  #{e[:title]}".green
+      end.tap {|l| out if l.length > 0 }
 
-      out
       true
     end
 
@@ -125,10 +123,13 @@ module Koi
     def list count = 10, index = -1
       out
 
-      @db.list[0..count].each do |e|
-        out " #[#{index += 1}]##{e.sticky?? "++ + ++" : "   "}''#{e[:title]}'' @@#{e[:tags].join(' ')}@@" unless e[:status] == :removed
+      @db.list[0..count].reject {|e| e[:status] == :removed }.each do |e|
+        out " [#{index += 1}]".blue           +
+            "#{e.sticky?? " + ".bold : "   "}" +
+            e[:title].underline               +
+            " #{e[:tags].join(' ')}".cyan
       end.tap do |list|
-        out "  !!nothing left to do!!" if list.size.zero?
+        out "  nothing left to do".green if list.size.zero?
       end
 
       out
@@ -167,7 +168,7 @@ module Koi
           } if entity[:"#{status}_at"]
         end.compact
       end.flatten.sort_by {|e| e[:time]}.reverse.each do |entry|
-        out "##{entry[:time]}# ^#{entry[:action]}^ ''#{entry[:title]}''"
+        out "#{entry[:time].blue} #{entry[:action].to_s.bold} #{entry[:title].underline}"
       end
     end
 
@@ -175,7 +176,7 @@ module Koi
       if obj.is_a? Hash
         puts "#{obj[:title]} : #{obj[:status]}"
       else
-        @mut.say obj.to_s
+        puts obj.to_s
       end unless @options[:silent]
     end
 
@@ -200,6 +201,7 @@ module Koi
     end
     alias :done did
     alias :fish did
+    alias :x    did
 
     def save
       File.open(File.join(Koi.root, Path[:db]), 'w') {|f| f.write @db.to_yaml }

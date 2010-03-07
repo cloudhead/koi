@@ -11,7 +11,7 @@ begin
     gem.homepage = "http://github.com/cloudhead/koi"
     gem.authors = ["cloudhead"]
     gem.add_development_dependency "rspec"
-    gem.add_dependency "mutter", ">= 0.4"
+    gem.add_dependency "colored", ">= 1.2"
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
