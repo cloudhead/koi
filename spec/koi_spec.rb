@@ -2,6 +2,9 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe Koi do
   TASK = "buy milk"
+  Koi::Path[:root] = '._koi'
+  Koi::Path[:db] = '._koi/database.yml'
+  Koi::Path[:paths] = '._koi/paths'
 
   context "in a new project" do
     before(:each) do
@@ -99,6 +102,11 @@ describe Koi do
         -> {Koi.run(:did, "celery")}.should raise_error(SystemExit)
       end
     end
+  end
+
+  after(:all) do
+    FileUtils.rm_rf(Koi::Path[:root])
+    FileUtils.rm_rf(File.join(ENV['HOME'], Koi::Path[:root]))
   end
 end
 
