@@ -79,9 +79,26 @@ describe Koi do
         @db.load.find(TASKS[1])[:tags].should include("food")
       end
 
+      it "should rise tasks" do
+        Koi.run(:rise, TASKS[2])
+        @db.load[1][:title].should == TASKS[2]
+      end
+
+      it "should sink tasks" do
+        Koi.run(:sink, TASKS[1])
+        @db.load.last[:title].should == TASKS[1]
+      end
+
+      it "should sticky tasks" do
+        Koi.run(:float, TASKS[2])
+        @db.load.list[0][:title].should == TASKS[2]
+        @db.load.find(TASKS[2])[:sticky].should be_true
+      end
+
       it "should warn when the task wasn't found" do
         -> {Koi.run(:did, "celery")}.should raise_error(SystemExit)
       end
     end
   end
 end
+
