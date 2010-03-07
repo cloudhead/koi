@@ -105,7 +105,8 @@ module Koi
     end
 
     def status
-      out "#{@db.select {|e| e.new? }.size} koi in the water"
+      todo = @db.select {|e| e.new? }.size
+      out "#{todo} koi in the water" unless todo.zero?
 
       self.list 5
 
@@ -124,12 +125,12 @@ module Koi
       out
 
       @db.list[0..count].reject {|e| e[:status] == :removed }.each do |e|
-        out " [#{index += 1}]".blue           +
+        out " [#{index += 1}]".blue            +
             "#{e.sticky?? " + ".bold : "   "}" +
-            e[:title].underline               +
+            e[:title].underline                +
             " #{e[:tags].join(' ')}".cyan
       end.tap do |list|
-        out "  nothing left to do".green if list.size.zero?
+        out "  there are no koi in the water".green if list.size.zero?
       end
 
       out
