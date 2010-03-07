@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{koi}
-  s.version = "0.2.3"
+  s.version = "0.2.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["cloudhead"]
-  s.date = %q{2010-03-06}
+  s.date = %q{2010-03-07}
   s.default_executable = %q{koi}
   s.description = %q{minimalist console-based task management for hackers}
   s.email = %q{self@cloudhead.net}
@@ -47,14 +47,14 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_development_dependency(%q<rspec>, [">= 0"])
-      s.add_runtime_dependency(%q<mutter>, [">= 0.4"])
+      s.add_runtime_dependency(%q<colored>, [">= 1.2"])
     else
       s.add_dependency(%q<rspec>, [">= 0"])
-      s.add_dependency(%q<mutter>, [">= 0.4"])
+      s.add_dependency(%q<colored>, [">= 1.2"])
     end
   else
     s.add_dependency(%q<rspec>, [">= 0"])
-    s.add_dependency(%q<mutter>, [">= 0.4"])
+    s.add_dependency(%q<colored>, [">= 1.2"])
   end
 end
 
