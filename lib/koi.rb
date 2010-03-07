@@ -232,7 +232,8 @@ module Koi
       if key.is_a? String
         @data.find {|e| e[:title].include? key }
       elsif key.is_a? Fixnum
-        @data.select {|e| e[:status] == :created}[key]
+        entities = @data.select {|e| e[:status] == :created}
+        (entities.select(&:sticky?) + entities.reject(&:sticky?))[key]
       else
         raise ArgumentError, "key must be a String or Fixnum, but is #{key.class}"
       end
