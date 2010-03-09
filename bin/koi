@@ -3,6 +3,10 @@ require 'optparse'
 
 $:.unshift File.dirname(__FILE__) + "/../lib"
 
+if RUBY_VERSION.split('.')[1].to_i < 9
+  abort "ruby 1.9 is required to run koi"
+end
+
 require 'koi'
 
 args = ARGV.dup
