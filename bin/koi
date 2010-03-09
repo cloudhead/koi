@@ -11,16 +11,16 @@ require 'koi'
 
 args = ARGV.dup
 
-options = {verbose: false, silent: false}
+options = {:verbose => false, :silent => false}
 
 OptionParser.new do |o|
-  o.banner = "usage: it COMMAND [ARGS]"
+  o.banner = "usage: koi COMMAND [ARGS]"
   o.separator ""
-  
+
   o.on_tail("-s", "--silent", "turn output off") do
     options[:silent] = true
   end
-  
+
   o.on_tail("-v", "--verbose", "enable verbose mode") do
     options[:verbose] = true
   end
