@@ -71,7 +71,7 @@ module Koi
       if Commands.include? @command
         if Koi.init? or Initializers.include? @command
           if !@param or @command == :add or @param = @db.find(@param)
-            @param ||= @db.last if [:float, :sink, :rm, :tag, :done].include? @command
+            @param ||= @db.last if [:float, :sink, :rm, :tag, :done, :did].include? @command
             if send(@command, *[@param, *@args].compact.flatten)
               save
             else
