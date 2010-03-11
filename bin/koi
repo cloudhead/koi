@@ -26,5 +26,5 @@ OptionParser.new do |o|
   end
 end.parse!(args)
 
-Koi::Command.new(args[0] || :status, args[1] || nil, args[2] || [], options).run
+Koi::Command.new(args[0] || :status, args[1..-1], options).run
 

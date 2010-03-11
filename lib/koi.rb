@@ -28,7 +28,7 @@ module Koi
   end
 
   def self.run *args
-    cmd = Command.new(*args)
+    cmd = Command.new(args.first, args[1..-1])
     cmd[:silent] = true
     cmd.run
   end
@@ -53,16 +53,15 @@ module Koi
       :init, :add, :list, :tag,
       :done, :did, :log, :status,
       :remove, :float, :sink,
-      :ls, :rm, :rise, :x
+      :ls, :rm, :rise, :x, :show
     ]
     Initializers = [:init, :add]
     Special = {"!" => :done, "?" => :status, "+" => :float}
 
     def initialize *all
-      cmd, param, args, options = all
+      cmd, args, options = all
       @command = Special[cmd] || cmd.to_sym
-      @args = [args || []].flatten
-      @param = param =~ /^\d+$/ ? param.to_i : param
+      @args = (args || []).map {|a| a =~ /^\d+$/ ? a.to_i : a }
       @options = options || {}
       @db = Koi.init?? Database.new(File.join(Koi.root, Path[:db])) : Database.new
     end
@@ -70,15 +69,12 @@ module Koi
     def run
       if Commands.include? @command
         if Koi.init? or Initializers.include? @command
-          if !@param or @command == :add or @param = @db.find(@param)
-            @param ||= @db.last if [:float, :sink, :rm, :tag, :done, :did].include? @command
-            if send(@command, *[@param, *@args].compact.flatten)
+          send(@command, *(@args.length == 1 ? @args.first : @args)).tap do |result|
+            if result
               save
             else
               err "error running #@command"
             end
-          else
-            err "task wasn't found"
           end
         else
            err "'koi' is not initialized here, please run `koi init`"
@@ -86,6 +82,8 @@ module Koi
       else
         err "#{@command} is not a valid command."
       end
+    rescue Database::EntityNotFound
+      err "the koi wasn't found"
     end
 
     def []= key, val
@@ -220,6 +218,7 @@ module Koi
 
   class Database
     include Enumerable
+    EntityNotFound = Class.new(RuntimeError)
 
     def initialize path = nil
       if @path = path
@@ -237,6 +236,8 @@ module Koi
         (entities.select(&:sticky?) + entities.reject(&:sticky?))[key]
       else
         raise ArgumentError, "key must be a String or Fixnum, but is #{key.class}"
+      end.tap do |result|
+        raise EntityNotFound if result.nil?
       end
     end
     alias :[] find
