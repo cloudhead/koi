@@ -116,9 +116,9 @@ module Koi
       true
     end
 
-    def show tags
+    def show tags = []
       tags = [tags].flatten
-      self.list @db.select {|e| e if (tags & e[:tags]).any? }
+      self.list @db.select {|e| (tags & e[:tags]).any? }
     end
 
     #
