@@ -124,8 +124,10 @@ module Koi
     #
     # List current tasks
     #
-    def list entities = @db.list[0..10]
+    def list entities = @db.list
       out
+
+      entities = entities.is_a?(Fixnum) ? @db.list[0...entities] : entities
 
       entities.reject {|e| e[:status] == :removed }.each_with_index do |e, i|
         out " [#{i}]".blue                     +
@@ -133,6 +135,7 @@ module Koi
             e[:title].underline                +
             " #{e[:tags].join(' ')}".cyan
       end.tap do |list|
+        out " ..." if @db.list.length > entities.length && !entities.length.zero?
         out "  there are no koi in the water".green if list.size.zero?
       end
 
