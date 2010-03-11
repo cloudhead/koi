@@ -106,7 +106,7 @@ module Koi
       todo = @db.select {|e| e.new? }.size
       out "#{todo} koi in the water" unless todo.zero?
 
-      self.list @db.list[0..5]
+      self.list @db.list[0...5]
 
       @db.select  {|e| e[:status] == :completed }.
           sort_by {|e| e[:completed_at] }[0..3].reverse.each do |e|
