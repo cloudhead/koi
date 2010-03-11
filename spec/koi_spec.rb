@@ -78,7 +78,7 @@ describe Koi do
       end
 
       it "should tag tasks" do
-        Koi.run(:tag, TASKS[1], ["food"])
+        Koi.run(:tag, TASKS[1], "food")
         @db.load.find(TASKS[1])[:tags].should include("food")
       end
 

@@ -102,11 +102,11 @@ module Koi
       end
     end
 
-    def status
+    def status options = {}
       todo = @db.select {|e| e.new? }.size
       out "#{todo} koi in the water" unless todo.zero?
 
-      self.list 5
+      self.list @db.list[0..5]
 
       @db.select  {|e| e[:status] == :completed }.
           sort_by {|e| e[:completed_at] }[0..3].reverse.each do |e|
@@ -116,14 +116,19 @@ module Koi
       true
     end
 
+    def show tags
+      tags = [tags].flatten
+      self.list @db.select {|e| e if (tags & e[:tags]).any? }
+    end
+
     #
     # List current tasks
     #
-    def list count = 10, index = -1
+    def list entities = @db.list[0..10]
       out
 
-      @db.list[0..count].reject {|e| e[:status] == :removed }.each do |e|
-        out " [#{index += 1}]".blue            +
+      entities.reject {|e| e[:status] == :removed }.each_with_index do |e, i|
+        out " [#{i}]".blue                     +
             "#{e.sticky?? " + ".bold : "   "}" +
             e[:title].underline                +
             " #{e[:tags].join(' ')}".cyan
@@ -132,11 +137,12 @@ module Koi
       end
 
       out
-      true
+      entities
     end
     alias :ls list
 
     def swim entry, n
+      entry = @db.find(entry)
       v = @db.index(entry) + @db.size / 3 * n
       @db.delete entry
       @db.insert([[v, 0].max, @db.size].min, entry)
@@ -151,6 +157,7 @@ module Koi
     end
 
     def float entry
+      entry = @db.find(entry)
       entry[:sticky] = ! entry[:sticky]
       true
     end
@@ -190,11 +197,17 @@ module Koi
       @db << Entity.new(title: entry, tags: tags, target: target)
     end
 
-    def tag entry, tags
-      entry[:tags] << tags
+    def tag *args
+      entry, *tags = args
+      entry = @db.find(entry)
+      entry[:tags] += tags
+      entry[:tags].uniq!
+
+      true
     end
 
     def did entry = 0
+      entry = @db.find(entry)
       entry.status = :completed
       entry[:completed_by] = ENV['USER']
     end
@@ -210,7 +223,7 @@ module Koi
     # Mark task as :removed (doesn't show up anywhere)
     #
     def remove entry
-      entry.status = :removed
+      @db.find(entry).status = :removed
     end
     alias :rm remove
     alias :kill remove
