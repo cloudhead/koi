@@ -104,7 +104,6 @@ module Koi
 
     def status options = {}
       todo = @db.select {|e| e.new? }.size
-      out "#{todo} koi in the water" unless todo.zero?
 
       self.list @db.list[0...5]
 
