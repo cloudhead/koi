@@ -92,6 +92,11 @@ describe Koi do
         @db.load.last[:title].should == TASKS[1]
       end
 
+      it "should show tasks with specific tags" do
+        Koi.run(:tag, TASKS[1], "#food")
+        Koi.run(:show, ["#food"]).first[:title].should == TASKS[1]
+      end
+
       it "should sticky tasks" do
         Koi.run(:float, TASKS[2])
         @db.load.list[0][:title].should == TASKS[2]
